@@ -32,4 +32,7 @@ features:
   - title: Recording Export
     details: Request a ZIP of call recordings for a date range and recording type, and get back a download URL.
     link: /api/recordings
+  - title: Call Records
+    details: Download all your call records once, get the changes every 5 minutes, and calculate the PBX dashboard numbers yourself.
+    link: /guide/call-records-sync
 ---

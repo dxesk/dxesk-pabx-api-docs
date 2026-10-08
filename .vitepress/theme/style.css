@@ -466,3 +466,25 @@ html {
   font-size: 14px;
   line-height: 1.65;
 }
+
+.copy-md {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+.copy-md-btn {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 6px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.copy-md-btn:hover {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+}

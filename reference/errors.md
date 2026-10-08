@@ -117,6 +117,28 @@ function isSuccess(json: { status: string | number }): boolean {
 | `0008` | Missing, non-Basic, or malformed `Authorization`, or the username is not a known PBX agent. |
 | `0009` | Unhandled failure while building the export. |
 
+## Gateway endpoints
+
+[Call Records](/api/call-records) and [Call Record Counts](/api/call-record-counts) work
+differently from the endpoints above. They use normal HTTP status codes, and an error body
+looks like this:
+
+```json
+{ "code": "INVALID_CURSOR", "message": "Cursor is not valid for this company" }
+```
+
+| Status | `code` | Cause |
+| --- | --- | --- |
+| `400` | `INVALID_CURSOR` | The cursor was changed, cut off, or belongs to another company. |
+| `400` | `INVALID_LIMIT` | `limit` is less than 1 or more than 1000. |
+| `400` | `INVALID_RANGE` | Wrong `from` or `to` on counts, or a range of more than 31 days. |
+| `401` | `UNAUTHORIZED` | `X-API-Key` is missing or wrong. |
+| `429` | `TOO_EARLY` | You already have everything and called before `nextPollAfter`. |
+| `429` | `RATE_LIMITED` | More than 60 requests in a minute. |
+| `500`, `503` | `SERVER_ERROR` | Try again later with the same parameters. |
+
+Both `429` responses include a `Retry-After` header, in seconds.
+
 ## Webhook receiver errors
 
 These are codes your own system returns, not Dwesk's. Dwesk retries `400`, `500`, and

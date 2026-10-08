@@ -16,8 +16,14 @@ export const dwesk = {
     Buffer.from(
       `${process.env.DWESK_USER}:${process.env.DWESK_PASS}`,
     ).toString("base64"),
+  gateway: process.env.DWESK_GATEWAY_BASE!,
+  apiKey: process.env.DWESK_API_KEY!,
 };
 ```
+
+`gateway` and `apiKey` are only needed for the [call records](/guide/call-records-sync)
+endpoints. Dwesk gives you both once the integration is agreed. The gateway base URL is
+not final yet, so read it from the environment rather than writing it into your code.
 
 ## A typed request helper
 
@@ -124,4 +130,4 @@ here too.
 ## Shared types
 
 Copy the interfaces from [Types](/reference/types) into your project for autocompletion on
-request parameters and webhook payloads.
+request parameters, webhook payloads and call records.

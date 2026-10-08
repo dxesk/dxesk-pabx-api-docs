@@ -13,9 +13,15 @@ HTTP Basic. There is no SDK to install and no session to maintain.
 | Upload a WAV prompt to DRM | [`POST /dwesk/api/content/v1/add`](/api/content-upload) |
 | Assign a customer's calls to a named agent | [`POST /mapping/direct/add`](/api/direct-mapping) |
 | Export call recordings for a date range | [`GET /download/call-recordings`](/api/recordings) |
+| Download your call records and keep them in sync | [`GET /call-records`](/api/call-records) |
+| Check your stored totals against Dwesk's | [`GET /call-records/counts`](/api/call-record-counts) |
 
 The platform also pushes [webhooks](/webhooks/) to an endpoint you hand to the Dwesk team,
 covering incoming calls, pre-connect notifications, and call completion.
+
+To build your own call dashboard, download the call records and calculate the numbers
+yourself. [Syncing Call Records](/guide/call-records-sync) explains how, and
+[Dashboard Metrics](/reference/dashboard-metrics) shows how each number is calculated.
 
 ## Core concepts
 
@@ -36,7 +42,8 @@ match a request to its eventual outcome.
 - Request and response bodies are JSON unless the endpoint says otherwise. Several
   endpoints take `application/x-www-form-urlencoded` or `multipart/form-data` instead.
 - Timestamps use `yyyy-MM-dd HH:mm:ss` in the server's local time. Scheduled start times
-  must be in the future.
+  must be in the future. The call records endpoints are different: they use ISO 8601 with
+  `+05:30` at the end.
 - Phone numbers are 9- or 10-digit local-format strings, for example `0771234567` or
   `771234567`.
 - A `status` of `"001"` in a response body means success. The HTTP status on its own will

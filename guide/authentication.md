@@ -1,7 +1,8 @@
 # Authentication
 
-Every endpoint uses HTTP Basic authentication. There are no API keys, bearer tokens, or
-OAuth flows, and nothing to refresh.
+The middleware and web endpoints use HTTP Basic authentication. The call records endpoints
+run on the Dwesk API gateway and use an [API key](#api-keys) instead. There are no tokens to
+refresh and no OAuth.
 
 ## Building the header
 
@@ -85,3 +86,27 @@ Webhooks travel in the opposite direction, so your endpoint authenticates Dwesk 
 than the reverse. You give the Dwesk team a webhook URL and, optionally, an API key. They
 store both against your company, and Dwesk sends the key back on each delivery as an
 `x-api-key` header. [Webhooks Overview](/webhooks/) covers verification.
+
+## API keys
+
+[Call Records](/api/call-records) and [Call Record Counts](/api/call-record-counts) run on
+the Dwesk API gateway. Send your API key in the `X-API-Key` header:
+
+```bash
+curl 'https://gateway.dxesk.cloud/pabx/v1/call-records' \
+  -H 'X-API-Key: <YOUR_API_KEY>'
+```
+
+We give you the API key once the integration is agreed. You also get the gateway address and
+the signing secret for the [Call Records Feed](/webhooks/call-records-feed). Each key belongs
+to one company and only returns that company's records.
+
+Keep the key safe, the same way as a password. Only use it from your own server, and keep it
+in a secret manager or an environment variable. If it leaks, ask your Dwesk contact to cancel
+it and give you a new one.
+
+If the key is missing or wrong, you get HTTP `401`:
+
+```json
+{ "code": "UNAUTHORIZED", "message": "Missing or invalid API key" }
+```

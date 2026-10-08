@@ -46,6 +46,11 @@ lose the events that land in between.
 | [Outbound Call End](/webhooks/outbound-call-end) | A campaign or survey call finishes | `/api/outbound-call` |
 | [Connect Agent Call End](/webhooks/connect-agent-call-end) | A `CONNECT_DIAL` call finishes | Agent-connected calls |
 
+The [Call Records Feed](/webhooks/call-records-feed) is set up the same way, but it works
+differently. It sends a batch of call records every 5 minutes, it is signed with
+HMAC-SHA256 instead of an API key, and it has its own retry rules. Its own page explains
+these.
+
 Not every event applies to every integration. You receive the ones relevant to the
 features your company uses.
 

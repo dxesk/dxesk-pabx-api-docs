@@ -1,4 +1,13 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { defineConfig } from 'vitepress'
+
+const endpointTag =
+  /<div class="endpoint"><span class="method (\w+)">(\w+)<\/span><span class="path">([^<]+)<\/span><\/div>/g
+
+function pageMarkdown(file: string): string {
+  return readFileSync(file, 'utf8').replace(endpointTag, '`$2 $3`').trim() + '\n'
+}
 
 export default defineConfig({
   title: 'Dwesk PABX API',
@@ -7,6 +16,11 @@ export default defineConfig({
   cleanUrls: true,
   srcExclude: ['README.md'],
   lastUpdated: true,
+
+  transformPageData(pageData, { siteConfig }) {
+    if (pageData.frontmatter.layout === 'home') return
+    pageData.markdown = pageMarkdown(resolve(siteConfig.srcDir, pageData.relativePath))
+  },
 
   head: [
     [
@@ -46,6 +60,7 @@ export default defineConfig({
           { text: 'Authentication', link: '/guide/authentication' },
           { text: 'Base URLs', link: '/guide/environments' },
           { text: 'TypeScript Setup', link: '/guide/typescript' },
+          { text: 'Syncing Call Records', link: '/guide/call-records-sync' },
         ],
       },
       {
@@ -56,6 +71,8 @@ export default defineConfig({
           { text: 'Content Upload', link: '/api/content-upload' },
           { text: 'Direct Agent Mapping', link: '/api/direct-mapping' },
           { text: 'Recording Export', link: '/api/recordings' },
+          { text: 'Call Records', link: '/api/call-records' },
+          { text: 'Call Record Counts', link: '/api/call-record-counts' },
         ],
       },
       {
@@ -67,6 +84,7 @@ export default defineConfig({
           { text: 'Queue Call End', link: '/webhooks/queue-call-end' },
           { text: 'Outbound Call End', link: '/webhooks/outbound-call-end' },
           { text: 'Connect Agent Call End', link: '/webhooks/connect-agent-call-end' },
+          { text: 'Call Records Feed', link: '/webhooks/call-records-feed' },
         ],
       },
       {
@@ -75,6 +93,7 @@ export default defineConfig({
           { text: 'Error Codes', link: '/reference/errors' },
           { text: 'Cause Codes', link: '/reference/cause-codes' },
           { text: 'Audio Requirements', link: '/reference/audio' },
+          { text: 'Dashboard Metrics', link: '/reference/dashboard-metrics' },
           { text: 'Types', link: '/reference/types' },
         ],
       },

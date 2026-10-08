@@ -113,6 +113,70 @@ export interface RecordingExportResponse {
 }
 ```
 
+## Call records
+
+```ts
+export type CallType = "INCOMING" | "CONNECT_DIAL" | "QUEUE_DIAL" | "OUTGOING";
+
+export type CallStatus =
+  | "WAITING"
+  | "RINGING"
+  | "ANSWERED"
+  | "TRANSFER"
+  | "CONFERENCE"
+  | "VOICEMAIL"
+  | "FAILED";
+
+export interface CallRecord {
+  id: number;
+  channelId: string;
+  companyId: number;
+  callerNumber: string | null;
+  agentCli: number | null;
+  callType: CallType;
+  callStatus: CallStatus;
+  callStartTime: string | null;
+  agentRingStartTime: string | null;
+  agentConnectTime: string | null;
+  callEndTime: string | null;
+  connected: boolean | null;
+  callFlowId: number | null;
+  updatedAt: string;
+}
+
+export interface CallRecordsPage {
+  records: CallRecord[];
+  nextCursor: string;
+  hasMore: boolean;
+  nextPollAfter: string | null;
+}
+
+export interface CallRecordCountsDay {
+  date: string;
+  total: number;
+  byStatus: Partial<Record<CallStatus, number>>;
+  byType: Partial<Record<CallType, number>>;
+}
+
+export interface CallRecordCountsResponse {
+  days: CallRecordCountsDay[];
+}
+
+export interface CallRecordsFeedBatch {
+  companyId: number;
+  from: string;
+  to: string;
+  records: CallRecord[];
+  complete: boolean;
+  cursor: string;
+}
+
+export interface GatewayError {
+  code: string;
+  message: string;
+}
+```
+
 ## Webhooks
 
 ```ts
@@ -183,9 +247,10 @@ export type DweskWebhook =
 
 ## Parsing timestamps
 
-Two formats are in play. Incoming-call events use ISO-8601 with an offset; everything
-else uses `yyyy-MM-dd HH:mm:ss` in server local time, which `new Date()` will not parse
-reliably across runtimes:
+Two formats are in play. Incoming-call events and the call records endpoints use ISO-8601
+with an offset, such as `2026-10-08T09:00:59+05:30`, which `new Date()` parses correctly.
+Everything else uses `yyyy-MM-dd HH:mm:ss` in server local time, which `new Date()` will not
+parse reliably across runtimes:
 
 ```ts
 export function parsePlatformTime(value: string): Date {

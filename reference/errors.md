@@ -119,25 +119,38 @@ function isSuccess(json: { status: string | number }): boolean {
 
 ## Gateway endpoints
 
-[Call Records](/api/call-records) and [Call Record Counts](/api/call-record-counts) work
+The gateway endpoints ([Call Records](/api/call-records),
+[Call Record Counts](/api/call-record-counts), [IVR Call Summary](/api/ivr-call-summary),
+[IVR Call Recording](/api/ivr-recordings) and [IVR Reports](/api/ivr-reports)) work
 differently from the endpoints above. They use normal HTTP status codes, and an error body
-looks like this:
+looks like this. The recording and report endpoints also send errors as JSON, not as audio or
+CSV.
 
 ```json
-{ "code": "INVALID_CURSOR", "message": "Cursor is not valid for this company" }
+{ "code": "INVALID_CURSOR", "message": "Cursor is not valid for this company", "transactionId": "3f2b8c1e-6d4a-4f9b-9a7e-2c5d8e1f0a64" }
 ```
 
 | Status | `code` | Cause |
 | --- | --- | --- |
 | `400` | `INVALID_CURSOR` | The cursor was changed, cut off, or belongs to another company. |
 | `400` | `INVALID_LIMIT` | `limit` is less than 1 or more than 1000. |
-| `400` | `INVALID_RANGE` | Wrong `from` or `to` on counts, or a range of more than 31 days. |
+| `400` | `INVALID_RANGE` | Wrong `from` or `to`, or a range of more than 31 days. |
+| `400` | `INVALID_PARAMETER` | A parameter is missing or wrong. `message` says which one. |
+| `400` | `MISSING_TRANSACTION_ID` | `X-Transaction-Id` is missing or empty. |
+| `400` | `INVALID_TRANSACTION_ID` | `X-Transaction-Id` is longer than 64 characters or has characters that aren't allowed. |
 | `401` | `UNAUTHORIZED` | `X-API-Key` is missing or wrong. |
+| `403` | `FEATURE_NOT_ENABLED` | The summary type, report, filter or recordings aren't turned on for your company. |
+| `404` | `FLOW_NOT_FOUND` | Your company has no flow with this `flowId`. |
+| `404` | `AGENT_NOT_FOUND` | Your company has no agent with this `agentCli`. |
+| `404` | `RECORDING_NOT_FOUND` | No call with this ID for your company, or it has no recording. |
 | `429` | `TOO_EARLY` | You already have everything and called before `nextPollAfter`. |
 | `429` | `RATE_LIMITED` | More than 60 requests in a minute. |
 | `500`, `503` | `SERVER_ERROR` | Try again later with the same parameters. |
 
 Both `429` responses include a `Retry-After` header, in seconds.
+
+`transactionId` is the `X-Transaction-Id` you sent, or `null` if you didn't send one. Give it
+to us when you report a problem. See [Transaction IDs](/guide/authentication#transaction-ids).
 
 ## Webhook receiver errors
 

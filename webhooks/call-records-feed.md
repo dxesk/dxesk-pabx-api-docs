@@ -1,7 +1,8 @@
 # Call Records Feed
 
 Every 5 minutes, Dwesk sends the new and changed call records to an endpoint on your server.
-This keeps your records up to date after the first download.
+This keeps your dashboard up to date after the first fetch, at most about 5 minutes
+behind ours.
 
 | | |
 | --- | --- |
@@ -11,7 +12,7 @@ This keeps your records up to date after the first download.
 | How often | Every 5 minutes, even when nothing changed |
 | Signed with | HMAC-SHA256, using a secret Dwesk gives you |
 
-Read [Syncing Call Records](/guide/call-records-sync) first. The feed works together with
+Read [Building Your Dashboard](/guide/build-your-dashboard) first. The feed works together with
 the [Call Records](/api/call-records) endpoint, which you use to fill in anything you miss.
 
 ## Getting set up
@@ -77,7 +78,7 @@ Each time you finish a delivery, save its `to` and `cursor`. When the next one a
   [Call Records](/api/call-records) with your saved `cursor` until `hasMore` is `false`, then
   save this delivery.
 
-The full code is in [If you missed something](/guide/call-records-sync#if-you-missed-something).
+The full code is in [If you missed something](/guide/build-your-dashboard#if-you-missed-something).
 
 Dwesk doesn't send a separate message when we had a problem or stopped retrying. The `from`
 of the next delivery tells you.

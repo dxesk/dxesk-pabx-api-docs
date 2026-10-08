@@ -1,7 +1,9 @@
 # Call Records
 
-Get your company's call records, one page at a time. Without a cursor you start from your
-first call. With a cursor you get only the records that changed after that cursor.
+Get your company's call records, one page at a time. These are the calls behind every number
+on the Dwesk PBX dashboard, so this is how you fill your own dashboard. Without a cursor you
+start from your first call. With a cursor you get only the records that changed after that
+cursor.
 
 <div class="endpoint"><span class="method get">GET</span><span class="path">/call-records</span></div>
 
@@ -10,13 +12,14 @@ first call. With a cursor you get only the records that changed after that curso
 | Base | Gateway. See [Base URLs](/guide/environments). |
 | Auth | [API key](/guide/authentication#api-keys) |
 
-Read [Syncing Call Records](/guide/call-records-sync) first. It explains when to call this
-endpoint and how to save what you get back.
+Read [Building Your Dashboard](/guide/build-your-dashboard) first. It explains when to call
+this endpoint and how to save what you get back.
 
 ## Parameters
 
 | Parameter | In | Required | Type | Description |
 | --- | --- | --- | --- | --- |
+| `X-Transaction-Id` | Header | Yes | String | Your ID for this request. See [transaction IDs](/guide/authentication#transaction-ids). |
 | `cursor` | Query | No | String | The `nextCursor` from your last response, or the `cursor` from a [feed delivery](/webhooks/call-records-feed). Leave it out to start from your first call. |
 | `limit` | Query | No | Integer | How many records per page. Default `500`, maximum `1000`. |
 
@@ -29,10 +32,13 @@ or make your own, because what's inside can change. Cursors never expire.
 
 ```bash [cURL]
 curl 'https://gateway.dxesk.cloud/pabx/v1/call-records?limit=500' \
-  -H 'X-API-Key: <YOUR_API_KEY>'
+  -H 'X-API-Key: <YOUR_API_KEY>' \
+  -H 'X-Transaction-Id: 3f2b8c1e-6d4a-4f9b-9a7e-2c5d8e1f0a64'
 ```
 
 ```ts [TypeScript]
+import { randomUUID } from "node:crypto";
+
 interface CallRecordsPage {
   records: CallRecord[];
   nextCursor: string;
@@ -49,7 +55,10 @@ async function getCallRecords(opts: {
   if (opts.limit) url.searchParams.set("limit", String(opts.limit));
 
   const res = await fetch(url, {
-    headers: { "X-API-Key": process.env.DWESK_API_KEY! },
+    headers: {
+      "X-API-Key": process.env.DWESK_API_KEY!,
+      "X-Transaction-Id": randomUUID(),
+    },
   });
 
   if (res.status === 429) {
@@ -155,7 +164,7 @@ that isn't in this list, save the record anyway and treat it like one that can s
 
 ## Paging and how often to call
 
-Pages come oldest first. During your first download, keep calling while `hasMore` is `true`.
+Pages come oldest first. During your first fetch, keep calling while `hasMore` is `true`.
 You don't need to wait between calls.
 
 When `hasMore` is `false`, you have everything, and the response includes `nextPollAfter`, 5
@@ -169,24 +178,26 @@ You can use a cursor from a feed delivery straight away.
 Each call looks back a little before your cursor, so you can get a record you already have.
 We do this on purpose, so a record that was saved a few seconds late on our side isn't
 missed. Save one row per `channelId` and it won't matter. See
-[A record can change](/guide/call-records-sync#a-record-can-change).
+[A record can change](/guide/build-your-dashboard#a-record-can-change).
 :::
 
 ## Error responses
 
-This endpoint uses normal HTTP status codes. The body has a `code` and a `message`.
+This endpoint uses normal HTTP status codes. The body has a `code`, a `message` and your `transactionId`.
 
 | Status | `code` | Why |
 | --- | --- | --- |
 | `400` | `INVALID_CURSOR` | The cursor was changed, cut off, or belongs to another company. Go back to an earlier cursor you saved. |
 | `400` | `INVALID_LIMIT` | `limit` is less than 1 or more than 1000. |
+| `400` | `MISSING_TRANSACTION_ID` | The `X-Transaction-Id` header is missing or empty. |
+| `400` | `INVALID_TRANSACTION_ID` | The transaction ID is longer than 64 characters or has characters that aren't allowed. |
 | `401` | `UNAUTHORIZED` | The `X-API-Key` header is missing or the key is wrong. |
 | `429` | `TOO_EARLY` | You already have everything and called before `nextPollAfter`. Wait `Retry-After` seconds. |
 | `429` | `RATE_LIMITED` | You sent more than 60 requests in a minute. Wait `Retry-After` seconds. |
 | `500`, `503` | `SERVER_ERROR` | Try the same request again later, with the same cursor. |
 
 ```json
-{ "code": "TOO_EARLY", "message": "Caught up. Next poll allowed at 2026-10-08T09:06:13+05:30" }
+{ "code": "TOO_EARLY", "message": "Caught up. Next poll allowed at 2026-10-08T09:06:13+05:30", "transactionId": "3f2b8c1e-6d4a-4f9b-9a7e-2c5d8e1f0a64" }
 ```
 
 A failed request never moves you forward or back. Trying again with the same cursor is always

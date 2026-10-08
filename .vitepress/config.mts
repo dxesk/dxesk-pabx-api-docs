@@ -60,7 +60,7 @@ export default defineConfig({
           { text: 'Authentication', link: '/guide/authentication' },
           { text: 'Base URLs', link: '/guide/environments' },
           { text: 'TypeScript Setup', link: '/guide/typescript' },
-          { text: 'Syncing Call Records', link: '/guide/call-records-sync' },
+          { text: 'Building Your Dashboard', link: '/guide/build-your-dashboard' },
         ],
       },
       {
@@ -73,6 +73,9 @@ export default defineConfig({
           { text: 'Recording Export', link: '/api/recordings' },
           { text: 'Call Records', link: '/api/call-records' },
           { text: 'Call Record Counts', link: '/api/call-record-counts' },
+          { text: 'IVR Call Summary', link: '/api/ivr-call-summary' },
+          { text: 'IVR Call Recording', link: '/api/ivr-recordings' },
+          { text: 'IVR Reports', link: '/api/ivr-reports' },
         ],
       },
       {

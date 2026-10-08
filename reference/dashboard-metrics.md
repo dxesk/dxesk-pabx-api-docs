@@ -1,8 +1,9 @@
 # Dashboard Metrics
 
-This page shows how every number on the Dwesk PBX dashboard is calculated. They all come from
-the [call records](/api/call-records) you sync. Use the same rules on your records and you
-will get the same numbers as our dashboard.
+This page shows how every number on the Dwesk PBX dashboard is calculated, so you can show the
+same numbers on your own dashboard. They all come from the [call records](/api/call-records)
+you saved. Use the same rules on your records and you get the same numbers as ours. If you
+haven't set up the records yet, start with [Building Your Dashboard](/guide/build-your-dashboard).
 
 ## Basic rules
 

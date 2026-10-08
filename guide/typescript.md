@@ -21,9 +21,24 @@ export const dwesk = {
 };
 ```
 
-`gateway` and `apiKey` are only needed for the [call records](/guide/call-records-sync)
-endpoints. Dwesk gives you both once the integration is agreed. The gateway base URL is
-not final yet, so read it from the environment rather than writing it into your code.
+`gateway` and `apiKey` are only needed for the gateway endpoints: call records (see
+[Building Your Dashboard](/guide/build-your-dashboard)) and the IVR call summary and reports.
+Your Dwesk contact gives you both. Read the gateway base URL from the environment rather than
+writing it into your code, so you can point it at a different address without a code change.
+
+Every gateway request also needs a new `X-Transaction-Id`. A small helper keeps both headers
+in one place:
+
+```ts
+import { randomUUID } from "node:crypto";
+
+export function gatewayHeaders(): Record<string, string> {
+  return {
+    "X-API-Key": dwesk.apiKey,
+    "X-Transaction-Id": randomUUID(),
+  };
+}
+```
 
 ## A typed request helper
 

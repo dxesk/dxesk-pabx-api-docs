@@ -174,8 +174,94 @@ export interface CallRecordsFeedBatch {
 export interface GatewayError {
   code: string;
   message: string;
+  transactionId: string | null;
 }
 ```
+
+## IVR call summary
+
+```ts
+export type IvrSummaryType =
+  | "ALL_DIAL_CALLS"
+  | "OUT_DIAL_CALLS"
+  | "DIRECT_CALL_MAPPING"
+  | "CONNECT_AGENT_CALLS"
+  | "TRANSFER_CALLS"
+  | "CONFERENCE_CALLS"
+  | "IVR_UPLOAD_CALLS";
+
+export interface IvrDialCall {
+  id: number;
+  dialType: string;
+  callerNumber: string;
+  hotlineNumber: string | null;
+  agentCli: string | null;
+  status: string;
+  finished: boolean;
+  dialStartTime: string;
+  dialEndTime: string | null;
+  callStartTime: string | null;
+  callEndTime: string | null;
+  ringCount: number | null;
+  agentsNotAnswered: string[];
+  voicemailAvailable: boolean;
+  transferAvailable: boolean;
+  conferenceAvailable: boolean;
+  details: string;
+}
+
+export interface IvrOutDialCall {
+  id: number;
+  fromNumber: string;
+  toNumber: string;
+  status: string;
+  startTime: string;
+  endTime: string | null;
+  details: string;
+  recordingUrl: string | null;
+}
+
+export interface IvrAgentCall {
+  id: number;
+  hotlineNumber: string | null;
+  agentCli: string | null;
+  customerNumber: string;
+  status: string;
+  startTime: string;
+  endTime: string | null;
+  details: string;
+  recordingUrl: string | null;
+}
+
+export interface IvrUploadCall {
+  campaignId: string;
+  callId: number;
+  fromNumber: string;
+  toNumber: string;
+  scheduledTime: string | null;
+  executedTime: string | null;
+  startTime: string | null;
+  endTime: string | null;
+  result: string | null;
+}
+
+export interface IvrCallSummaryPage {
+  flowId: number;
+  type: IvrSummaryType;
+  from: string;
+  to: string;
+  page: number;
+  size: number;
+  totalItems: number;
+  totalPages: number;
+  items: Array<IvrDialCall | IvrOutDialCall | IvrAgentCall | IvrUploadCall>;
+}
+```
+
+`items` holds one shape per `type`. See
+[Summary types](/api/ivr-call-summary#summary-types) for which.
+
+[IVR Reports](/api/ivr-reports) return CSV, so they have no types here.
 
 ## Webhooks
 

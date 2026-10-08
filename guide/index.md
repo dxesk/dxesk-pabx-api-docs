@@ -13,14 +13,17 @@ HTTP Basic. There is no SDK to install and no session to maintain.
 | Upload a WAV prompt to DRM | [`POST /dwesk/api/content/v1/add`](/api/content-upload) |
 | Assign a customer's calls to a named agent | [`POST /mapping/direct/add`](/api/direct-mapping) |
 | Export call recordings for a date range | [`GET /download/call-recordings`](/api/recordings) |
-| Download your call records and keep them in sync | [`GET /call-records`](/api/call-records) |
+| Get the calls behind the PBX dashboard, to build your own | [`GET /call-records`](/api/call-records) |
 | Check your stored totals against Dwesk's | [`GET /call-records/counts`](/api/call-record-counts) |
+| List the calls through an IVR flow, with recording links | [`GET /ivr/call-summary`](/api/ivr-call-summary) |
+| Download one IVR call recording | [`GET /ivr/recordings/{kind}/{id}`](/api/ivr-recordings) |
+| Get an IVR flow or agent report as CSV | [`GET /ivr/reports`](/api/ivr-reports) |
 
 The platform also pushes [webhooks](/webhooks/) to an endpoint you hand to the Dwesk team,
 covering incoming calls, pre-connect notifications, and call completion.
 
-To build your own call dashboard, download the call records and calculate the numbers
-yourself. [Syncing Call Records](/guide/call-records-sync) explains how, and
+To build your own call dashboard, fetch the call records and calculate the numbers
+yourself. [Building Your Dashboard](/guide/build-your-dashboard) explains how, and
 [Dashboard Metrics](/reference/dashboard-metrics) shows how each number is calculated.
 
 ## Core concepts
@@ -30,7 +33,7 @@ yourself. [Syncing Call Records](/guide/call-records-sync) explains how, and
 | Company | Your tenant on the platform, identified by `companyId`. Every request is scoped to one company, and the credentials you authenticate with must belong to it. |
 | Service | A provisioned calling service under a company, identified by a dotted `serviceId` such as `10042.1.1999.2000`. Content uploads and outbound calls are billed against a service. |
 | Content | An audio prompt stored in DRM, identified by a numeric `contentId`. Content is independent of phone numbers, so you upload once and reference the ID from any number of calls. |
-| Transaction ID | An identifier you generate for each request, conventionally `yyyyMMddHHmmss`. |
+| Transaction ID | An identifier you generate for each request, conventionally `yyyyMMddHHmmss`. On the gateway endpoints it goes in the `X-Transaction-Id` header, and a UUID is recommended. See [Transaction IDs](/guide/authentication#transaction-ids). |
 | Call flow | The IVR routing configuration a call passes through, identified by `callFlowId`. Inbound webhooks carry it. Calls that failed before reaching a flow leave it empty. |
 
 Generate a new transaction ID for every request. The platform echoes it back in the

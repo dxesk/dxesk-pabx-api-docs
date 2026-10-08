@@ -7,17 +7,17 @@ plus a fixed path prefix, plus the endpoint path.
 | --- | --- |
 | Middleware base | `https://dxesk-asr-node7-server-farm-6.dxesk.cloud/dwesk-middleware/api/middleware` |
 | Web base | `https://pabx.dwesk.cloud/dwesk` |
-| Gateway base | `https://gateway.dxesk.cloud/pabx/v1` (example only) |
+| Gateway base | `https://gateway.dxesk.cloud/pabx/v1` (example, yours comes with your API key) |
 
 Your hostnames are issued with your credentials. Nodes are allocated per tenant, so yours
 may read `dxesk-asr-node5-...` rather than `node7`. Use the hostname you were given.
 Everything after the hostname is the same on every node.
 
-::: info The gateway base URL is not final
-The call records endpoints run on the Dwesk API gateway. `https://gateway.dxesk.cloud/pabx/v1`
-is only an example, and both the address and the path after it can change. You will get the
-real base URL with your API key. Keep it in configuration, and add the endpoint path to it,
-for example base URL + `/call-records`.
+::: info Use the gateway base URL you were given
+The call records and IVR endpoints run on the Dwesk API gateway. The gateway base URL is issued
+with your API key, and both the address and the path in it can differ from
+`https://gateway.dxesk.cloud/pabx/v1` used in the examples. Keep it in configuration, and add
+the endpoint path to it, for example base URL + `/call-records`.
 :::
 
 ## Which base does an endpoint use?
@@ -32,6 +32,9 @@ for example base URL + `/call-records`.
 | `POST /api/content/v1/add` | Web (note the path: `/dwesk/api/content/v1/add`) |
 | `GET /call-records` | Gateway |
 | `GET /call-records/counts` | Gateway |
+| `GET /ivr/call-summary` | Gateway |
+| `GET /ivr/recordings/{kind}/{id}` | Gateway |
+| `GET /ivr/reports` | Gateway |
 
 A full URL is the base plus the endpoint path:
 

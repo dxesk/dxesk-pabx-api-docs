@@ -1,7 +1,8 @@
 # Call Record Counts
 
 Get the number of call records for each day, split by status and by type. Use it to check
-that the records you saved match the ones Dwesk has.
+that the calls you saved match the ones Dwesk has. If they match, your dashboard shows the
+same numbers as ours.
 
 <div class="endpoint"><span class="method get">GET</span><span class="path">/call-records/counts</span></div>
 
@@ -14,6 +15,7 @@ that the records you saved match the ones Dwesk has.
 
 | Parameter | In | Required | Type | Description |
 | --- | --- | --- | --- | --- |
+| `X-Transaction-Id` | Header | Yes | String | Your ID for this request. See [transaction IDs](/guide/authentication#transaction-ids). |
 | `from` | Query | Yes | String | First day, `yyyy-MM-dd`. |
 | `to` | Query | Yes | String | Last day, `yyyy-MM-dd`. This day is included. Up to 31 days after `from`. |
 
@@ -26,10 +28,13 @@ without a `callStartTime` are not counted.
 
 ```bash [cURL]
 curl 'https://gateway.dxesk.cloud/pabx/v1/call-records/counts?from=2026-10-01&to=2026-10-07' \
-  -H 'X-API-Key: <YOUR_API_KEY>'
+  -H 'X-API-Key: <YOUR_API_KEY>' \
+  -H 'X-Transaction-Id: 3f2b8c1e-6d4a-4f9b-9a7e-2c5d8e1f0a64'
 ```
 
 ```ts [TypeScript]
+import { randomUUID } from "node:crypto";
+
 interface CallRecordCountsDay {
   date: string;
   total: number;
@@ -43,7 +48,10 @@ async function getCallRecordCounts(from: string, to: string) {
   url.searchParams.set("to", to);
 
   const res = await fetch(url, {
-    headers: { "X-API-Key": process.env.DWESK_API_KEY! },
+    headers: {
+      "X-API-Key": process.env.DWESK_API_KEY!,
+      "X-Transaction-Id": randomUUID(),
+    },
   });
   if (!res.ok) throw new Error(`call-records/counts ${res.status}`);
 
@@ -104,7 +112,7 @@ for (const day of days) {
 
 If `total` matches but `byStatus` doesn't, you have the right calls but some are old
 versions. Usually that means a newer record didn't replace the old one. Check
-[A record can change](/guide/call-records-sync#a-record-can-change).
+[A record can change](/guide/build-your-dashboard#a-record-can-change).
 
 If your `total` is lower, call [Call Records](/api/call-records) with your last saved cursor.
 
@@ -118,6 +126,8 @@ match exactly while calls are going on. Compare yesterday and earlier.
 | Status | `code` | Why |
 | --- | --- | --- |
 | `400` | `INVALID_RANGE` | `from` or `to` is missing or not `yyyy-MM-dd`, `to` is before `from`, or the range is more than 31 days. |
+| `400` | `MISSING_TRANSACTION_ID` | The `X-Transaction-Id` header is missing or empty. |
+| `400` | `INVALID_TRANSACTION_ID` | The transaction ID is longer than 64 characters or has characters that aren't allowed. |
 | `401` | `UNAUTHORIZED` | The `X-API-Key` header is missing or the key is wrong. |
 | `429` | `RATE_LIMITED` | You sent more than 60 requests in a minute. Wait `Retry-After` seconds. |
 | `500`, `503` | `SERVER_ERROR` | Try again later. |

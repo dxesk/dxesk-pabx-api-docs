@@ -47,7 +47,8 @@ is also counted in its own group. So one transferred call adds 1 to Answered and
 Transfer.
 
 A `WAITING` record counts in the totals and in Inbound or Outbound, but not in any status
-group.
+group. The same goes for a record with no `callStatus`: an `INCOMING` call that ended in your IVR
+before it reached an agent. It counts in the totals and in Inbound only.
 
 ## Today's summary
 

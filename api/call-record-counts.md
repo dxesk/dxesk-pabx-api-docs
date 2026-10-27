@@ -89,7 +89,7 @@ async function getCallRecordCounts(from: string, to: string) {
 | `days` | Array | One item for every day from `from` to `to`, even days with no calls. |
 | `days[].date` | String | `yyyy-MM-dd`. |
 | `days[].total` | Integer | Number of records that started on this day. |
-| `days[].byStatus` | Object | Number of records for each `callStatus`. Statuses with 0 records are left out. |
+| `days[].byStatus` | Object | Number of records for each `callStatus`. Statuses with 0 records are left out. Records with no status ([`INCOMING` calls that never reached an agent](/api/call-records#no-status)) are counted in `total` but not here, so `byStatus` can add up to less than `total`. |
 | `days[].byType` | Object | Number of records for each `callType`. Types with 0 records are left out. |
 
 ## Comparing with your records
@@ -111,7 +111,8 @@ for (const day of days) {
 ```
 
 If `total` matches but `byStatus` doesn't, you have the right calls but some are old
-versions. Usually that means a newer record didn't replace the old one. Check
+versions. (Count your records with no `callStatus` separately: they are in `total` but never in
+`byStatus`.) Usually that means a newer record didn't replace the old one. Check
 [A record can change](/guide/build-your-dashboard#a-record-can-change).
 
 If your `total` is lower, call [Call Records](/api/call-records) with your last saved cursor.

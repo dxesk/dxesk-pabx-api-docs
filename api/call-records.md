@@ -121,7 +121,7 @@ async function getCallRecords(opts: {
 | `callerNumber` | String | The customer's number. For `OUTGOING` calls this is the number of the agent who made the call. |
 | `agentCli` | Long \| null | The agent's phone number, without the first `0`. `null` if no agent took part. |
 | `callType` | String | Which way the call went. See [call types](#call-types). |
-| `callStatus` | String | What has happened to the call so far. See [call statuses](#call-statuses). |
+| `callStatus` | String \| null | What has happened to the call so far. See [call statuses](#call-statuses). `null` for an `INCOMING` call that hasn't reached an agent. |
 | `callStartTime` | String \| null | When the call reached the PBX. |
 | `agentRingStartTime` | String \| null | When an agent's phone started ringing. |
 | `agentConnectTime` | String \| null | When the agent answered. |
@@ -161,6 +161,14 @@ the agent up from it.
 
 A `WAITING` or `RINGING` record will be sent again when it changes. If you ever get a status
 that isn't in this list, save the record anyway and treat it like one that can still change.
+
+#### No status
+
+An `INCOMING` record has `callStatus` `null` while the caller is in your IVR and hasn't reached
+an agent yet. If Connect Agent or a queue picks the call up, the record is sent again with a new
+`callType` and a status. If the call ends in the IVR, for example because the caller hung up, it
+keeps `null` and gets a `callEndTime`. Save these records like any other: they are real calls to
+your hotline.
 
 ## Paging and how often to call
 

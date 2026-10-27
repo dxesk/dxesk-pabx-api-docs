@@ -134,7 +134,7 @@ export interface CallRecord {
   callerNumber: string | null;
   agentCli: number | null;
   callType: CallType;
-  callStatus: CallStatus;
+  callStatus: CallStatus | null;
   callStartTime: string | null;
   agentRingStartTime: string | null;
   agentConnectTime: string | null;

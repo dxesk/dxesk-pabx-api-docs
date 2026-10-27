@@ -125,7 +125,7 @@ Keep asking for the next page while `page` is less than `totalPages`.
 All times are Sri Lanka time, ISO 8601 with `+05:30`. A time is `null` if that step didn't
 happen. `agentCli` is the agent's number without the first `0`, the same as in
 [Call Records](/api/call-records#call-record). Other phone numbers are sent as Dwesk stored
-them. If number masking is on for your company, some digits are hidden.
+them.
 
 ### IvrDialCall
 

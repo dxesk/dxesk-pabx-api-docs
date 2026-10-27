@@ -104,11 +104,37 @@ Ask your Dwesk contact for an API key. With it you get your gateway base URL and
 secret for the [Call Records Feed](/webhooks/call-records-feed). Each key belongs to one
 company and only returns that company's data.
 
-Keep the key safe, the same way as a password. Only use it from your own server, and keep it
-in a secret manager or an environment variable. If it leaks, ask your Dwesk contact to cancel
-it and give you a new one.
+### Looking after your key
 
-If the key is missing or wrong, you get HTTP `401`:
+API keys start with `dxk_`. We show you the key once, when we hand it over. We store only a
+hash of it, so we can't send it again later. If you lose it, ask for a new one.
+
+Keep the key safe, the same way as a password. Only use it from your own server, and keep it
+in a secret manager or an environment variable. Send it in the `X-API-Key` header only. Never
+put it in a URL, because URLs end up in logs and browser history.
+
+Your company can have up to 10 keys at the same time. Use a separate key for each system that
+calls the gateway, so you can cancel one without stopping the others.
+
+### Changing a key
+
+To replace a key without downtime:
+
+1. Ask your Dwesk contact for a new key.
+2. Switch your systems to the new key.
+3. Ask us to cancel the old one.
+
+Cancelling takes effect at once. From then on, requests with the old key get `401`. If a key
+leaks, ask us to cancel it straight away and give you a new one.
+
+### Limits
+
+Each key can make 60 requests a minute. Above that you get `429 RATE_LIMITED`, with a
+`Retry-After` header that says how many seconds to wait. Separate keys have separate limits.
+
+### Wrong or missing key
+
+If the key is missing, wrong or cancelled, you get HTTP `401`:
 
 ```json
 { "code": "UNAUTHORIZED", "message": "Missing or invalid API key", "transactionId": "3f2b8c1e-6d4a-4f9b-9a7e-2c5d8e1f0a64" }
